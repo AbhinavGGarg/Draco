@@ -1,0 +1,135 @@
+# Stage 3: Production
+
+**Goal:** Auth, account creation, deployment, error hardening.
+
+Created ONLY after user approves MVP 2b gate.
+
+---
+
+## Task Dependency Graph
+
+```
+STAGE 3: PRODUCTION
+  Task 0j: skill-discovery-auth          owner: builder-auth
+  Task 25: build-auth                    owner: builder-auth              blocked_by: [0j]
+  Task 26: validate-auth                 owner: validator-auth            blocked_by: [25]
+
+  Task 27: build-account-creation        owner: builder-auth              blocked_by: [26]
+  Task 28: validate-account-creation     owner: validator-auth            blocked_by: [27]
+
+  Task 0k: skill-discovery-deploy        owner: builder-deploy
+  Task 29: build-deploy-config           owner: builder-deploy            blocked_by: [0k, 26]
+  Task 30: validate-deploy               owner: validator-deploy          blocked_by: [29]
+
+  Task 31: build-error-handling          owner: lead                      blocked_by: [28, 30]
+  Task 32: production-integration        owner: lead                      blocked_by: [31]
+  Task 33: deploy                        owner: lead                      blocked_by: [32]
+
+  --- GATE: Lead presents deployed app, evaluates Production gate, asks user to approve release ---
+```
+
+---
+
+## builder-auth — Spawn Prompt
+
+> **NOTE:** Expand through teammate-maker before spawning.
+
+```
+## Role
+You are the builder-auth teammate. Your ONE job: add Supabase Auth
+(sign-up, login, sessions) to both Flask and the frontend.
+
+## Task 0: Skill Discovery (MANDATORY)
+1. If no Supabase Auth skill exists, create one via skill-creator
+2. Load relevant skills
+
+## Spec
+Read `CLAUDE.md`:
+- "Production (Stage 3)" → Authentication, Account Creation Flow
+
+## Scope
+- api/src/services/auth.py
+- api/src/routes/auth.py
+- frontend/components/AuthWrapper.tsx
+- frontend/lib/auth.ts
+
+## What to Build
+
+1. **auth.py service**: JWT validation, session management via Supabase Auth
+2. **auth.py routes**: POST /api/auth/signup, POST /api/auth/login, POST /api/auth/logout
+3. **Account creation**: sign-up → phone number → create user + agent → configure iMessage
+4. **AuthWrapper.tsx**: wraps app in auth check, redirects to login if no session
+5. **auth.ts**: Supabase Auth client helpers
+
+## MCP Servers
+- supabase: for auth operations
+- context7: for Supabase Auth docs
+
+## Commit After Task Completion
+git add scoped files, commit with detailed message, push.
+```
+
+---
+
+## builder-deploy — Spawn Prompt
+
+> **NOTE:** Expand through teammate-maker before spawning.
+
+```
+## Role
+You are the builder-deploy teammate. Your ONE job: create Render deployment
+configuration for Flask and Next.js.
+
+## Task 0: Skill Discovery (MANDATORY)
+Load render-deploy skill and its cookbook.
+
+## Spec
+Read `CLAUDE.md`:
+- "Production (Stage 3)" → Deployment
+- "Environment Variables"
+
+## Scope
+- render.yaml
+- Any deployment config files
+
+## What to Build
+
+1. **render.yaml** — Render Blueprint:
+   - Flask web service (Python)
+   - Next.js web service (Node)
+   - Environment variables from .env mapped to Render env groups
+   - Health check endpoints configured
+   - Build commands, start commands
+
+## MCP Servers
+- context7: for Render docs
+
+## Commit After Task Completion
+git add scoped files, commit with detailed message, push.
+```
+
+---
+
+## build-error-handling — Lead Task
+
+After auth and deploy are validated, the lead adds error handling across all endpoints:
+- Consistent error format: `{ error: string, code: string }`
+- Stripe failures: retry once
+- Rye failures: try alternative, then error
+- Supabase connection: 503 with retry hint
+- OpenClaw gateway down: graceful failure
+
+## production-integration — Lead Task
+
+1. Wire auth into all protected endpoints
+2. Add JWT validation middleware
+3. Run full test suite
+4. Verify account creation flow end-to-end
+
+## deploy — Lead Task
+
+1. Deploy to Render using render-deploy skill
+2. Verify health endpoints on deployed URLs
+3. Run smoke tests against production
+4. Evaluate Production gate criteria
+5. **Ask user: "Production gate criteria pass/fail. Approve release?"**

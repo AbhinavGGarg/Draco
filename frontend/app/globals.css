@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Menlo", monospace;
+
+  --color-background: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F4F4F5;
+
+  --color-border: #E5E7EB;
+  --color-border-light: #F3F4F6;
+
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
+
+  --color-accent: #111827;
+  --color-accent-light: rgba(17, 24, 39, 0.06);
+  --color-accent-hover: #374151;
+
+  --color-success: #10B981;
+  --color-success-light: rgba(16, 185, 129, 0.08);
+
+  --color-warning: #F59E0B;
+  --color-warning-light: rgba(245, 158, 11, 0.08);
+
+  --color-danger: #EF4444;
+  --color-danger-light: rgba(239, 68, 68, 0.08);
+
+  --color-orange: #F97316;
+  --color-orange-light: rgba(249, 115, 22, 0.08);
+
+  --color-purple: #10B981;
+  --color-purple-light: rgba(16, 185, 129, 0.08);
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.glass-panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+/* Staggered fade-up (used by current dashboard components, replaced by framer-motion in Layer 5) */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeUp 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-in:nth-child(1) { animation-delay: 0ms; }
+.animate-in:nth-child(2) { animation-delay: 60ms; }
+.animate-in:nth-child(3) { animation-delay: 120ms; }
+.animate-in:nth-child(4) { animation-delay: 180ms; }
+.animate-in:nth-child(5) { animation-delay: 240ms; }
+.animate-in:nth-child(6) { animation-delay: 300ms; }

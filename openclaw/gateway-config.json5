@@ -1,0 +1,53 @@
+{
+  // OpenPay v3 — OpenClaw Gateway Configuration
+  // Docs: https://docs.openclaw.ai/gateway/configuration-reference
+
+  env: {
+    ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY}",
+  },
+
+  agents: {
+    defaults: {
+      model: {
+        // Claude Haiku for cost-efficient reasoning
+        primary: "anthropic/claude-haiku-4-5",
+      },
+      models: {
+        // Haiku for lightweight judgment calls (e.g., "does this need clarification?")
+        "anthropic/claude-haiku-4-5": {},
+      },
+      workspace: "~/.openclaw/workspace",
+    },
+  },
+
+  skills: {
+    load: {
+      // Load custom skills from the project's skills directory
+      extraDirs: ["./skills"],
+    },
+    entries: {
+      // Pre-installed: product search and comparison
+      "shopping-expert": { enabled: true },
+      // Custom: purchase execution through Flask API
+      "buy": { enabled: true },
+    },
+  },
+
+  channels: {
+    imessage: {
+      enabled: true,
+      cliPath: "imsg",
+      dbPath: "~/Library/Messages/chat.db",
+      dmPolicy: "allowlist",
+      allowFrom: ["REPLACE_WITH_USER_PHONE_OR_APPLE_ID"],
+      historyLimit: 50,
+      includeAttachments: true,
+      service: "auto",
+    },
+  },
+
+  server: {
+    port: 18789,
+    bind: "127.0.0.1",
+  },
+}

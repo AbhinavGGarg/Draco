@@ -1,0 +1,12 @@
+flask
+flask-cors
+python-dotenv
+supabase
+stripe
+requests
+PyJWT[crypto]
+solana
+solders
+base58
+google-genai
+gunicorn
